@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages | ARBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- jQuery (required for toastr) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Toastr CSS and JS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+    }
+
+    .create {
+  position: absolute;
+  top: 15px;
+  right: 100px;
+  display: flex;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.create .nav-link {
+  padding: 10px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+
+
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- Navbar -->
+  <nav class="w-full flex justify-between items-center p-4 glass fixed top-0 z-50">
+    <h1 class="text-2xl font-semibold">ARBlog</h1>
+    <div class="create">
+      <a href="home.html" class="nav-link btn-primary">Home</a>
+      <a href="create.html" class="nav-link btn-primary">Create</a>
+    </div>
+    
+    <div class="relative">
+      <img id="nav-profile-img" src="" alt="profile" class="w-10 h-10 rounded-full cursor-pointer border border-white">
+      <div id="profile-dropdown" class="absolute right-0 mt-2 hidden glass text-black text-sm min-w-[140px] rounded-xl shadow-lg p-2">
+        <a href="profile.html" class="block py-1 px-2 hover:bg-white hover:text-black rounded-md">My Profile</a>
+        <button onclick="logout()" class="w-full text-left py-1 px-2 hover:bg-white hover:text-black rounded-md">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Layout -->
+  <div class="pt-20 px-4 md:px-12 h-[calc(100vh-80px)] flex gap-4">
+
+    <!-- Chat Sidebar -->
+    <div class="glass w-1/3 max-w-sm h-full flex flex-col p-4 overflow-y-auto">
+      <input id="searchUser" type="text" placeholder="Search Username" class="glass p-2 rounded-lg mb-4 text-black outline-none">
+      <div id="searchResults" class="flex flex-col gap-2 overflow-y-auto"></div>
+      <div class="border-t border-white/10 my-2"></div>
+      <div id="chatList" class="flex flex-col gap-2 overflow-y-auto"></div>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="glass flex-1 h-full p-4 flex flex-col justify-between overflow-hidden">
+      <div id="selectedUser" class="flex items-center gap-3 mb-3"></div>
+      <div id="chatBox" class="p-4 overflow-y-auto">
+        <div class="text-center text-white/60 mt-10">Select a user to start chatting</div>
+      </div>
+      <div class="flex mt-4">
+        <input id="messageInput" type="text" placeholder="Type a message..." class="glass flex-1 p-2 rounded-l-xl text-black outline-none">
+        <button onclick="sendMessage()" class="bg-cyan-400 px-4 py-2 rounded-r-xl hover:bg-cyan-500 transition">Send</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDYvFdWoLL-YAObctYXBfkqwkUbLBXTsTk",
+      authDomain: "arblog-a19f3.firebaseapp.com",
+      projectId: "arblog-a19f3",
+      storageBucket: "arblog-a19f3.appspot.com",
+      messagingSenderId: "1001446483266",
+      appId: "1:1001446483266:web:436692dd843096e5eed4db"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser, selectedChatUser, allUsers = [];
+    const addedUsers = new Set();
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadCurrentUserProfile();
+        fetchUsers();
+        loadChatList();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function logout() {
+      auth.signOut().then(() => window.location.href = "login.html");
+    }
+
+    function loadCurrentUserProfile() {
+      db.collection('users').doc(currentUser.uid).get().then(doc => {
+        const data = doc.data();
+        document.getElementById("nav-profile-img").src = data.profilePicUrl;
+      });
+    }
+
+    document.getElementById("nav-profile-img").addEventListener("click", () => {
+      document.getElementById("profile-dropdown").classList.toggle("hidden");
+    });
+
+    function fetchUsers() {
+      db.collection("users").onSnapshot(snapshot => {
+        allUsers = snapshot.docs.map(doc => doc.data())
+          .filter(data => data.username.toLowerCase() !== currentUser.email.split('@')[0].toLowerCase());
+      });
+    }
+
+    document.getElementById("searchUser").addEventListener("input", e => {
+      const term = e.target.value.toLowerCase();
+      const container = document.getElementById("searchResults");
+      container.innerHTML = "";
+      if (!term) return;
+
+      const filtered = allUsers.filter(u => u.username.toLowerCase().includes(term));
+      filtered.forEach(user => {
+        if (addedUsers.has(user.username)) return;
+        const div = document.createElement("div");
+        div.className = "flex items-center gap-3 cursor-pointer hover:bg-white/20 p-2 rounded-xl";
+        div.innerHTML = `<img src="${user.profilePicUrl}" class="w-10 h-10 rounded-full"><span>${user.username}</span>`;
+        div.onclick = () => {
+          saveUserToChatList(user.username);
+          addUserToSidebar(user);
+          selectUser(user.username, user.profilePicUrl);
+          document.getElementById("searchUser").value = "";
+          container.innerHTML = "";
+        };
+        container.appendChild(div);
+      });
+    });
+
+    function saveUserToChatList(username) {
+      db.collection("users").doc(currentUser.uid).update({
+        chattingWith: firebase.firestore.FieldValue.arrayUnion(username)
+      });
+    }
+
+    function loadChatList() {
+      const list = document.getElementById("chatList");
+      db.collection("users").doc(currentUser.uid).onSnapshot(doc => {
+        const data = doc.data();
+        list.innerHTML = "";
+        addedUsers.clear();
+        if (data.chattingWith) {
+          data.chattingWith.forEach(username => {
+            const user = allUsers.find(u => u.username === username);
+            if (user) addUserToSidebar(user);
+          });
+        }
+      });
+    }
+
+    function addUserToSidebar(user) {
+  if (addedUsers.has(user.username)) return;
+  addedUsers.add(user.username);
+  const list = document.getElementById("chatList");
+  const div = document.createElement("div");
+  div.className = "chat-user flex items-center gap-3 cursor-pointer hover:bg-white/20 p-2 rounded-xl";
+  div.setAttribute("data-username", user.username); // ADD THIS LINE
+  div.innerHTML = `<img src="${user.profilePicUrl}" class="w-10 h-10 rounded-full"><span>${user.username}</span>`;
+  div.onclick = () => selectUser(user.username, user.profilePicUrl);
+  list.appendChild(div);
+}
+
+
+    function selectUser(username, profilePic) {
+      selectedChatUser = username;
+      document.getElementById("selectedUser").innerHTML = `
+        <div class="flex items-center gap-3">
+          <img src="${profilePic}" class="w-10 h-10 rounded-full">
+          <span class="text-lg font-semibold">${username}</span>
+          <button onclick="deleteChat('${username}')" class="ml-2 text-sm text-red-500 hover:underline">Delete</button>
+        </div>`;
+      loadMessages();
+    }
+
+    function getChatDocId(user1, user2) {
+      return [user1.toLowerCase(), user2.toLowerCase()].sort().join("_");
+    }
+
+    function loadMessages() {
+      const docId = getChatDocId(currentUser.email.split('@')[0], selectedChatUser);
+      db.collection("chats").doc(docId).collection("messages").orderBy("timestamp")
+        .onSnapshot(snapshot => {
+          const box = document.getElementById("chatBox");
+          box.innerHTML = "";
+          snapshot.forEach(doc => {
+            const msg = doc.data();
+            const isMe = msg.sender === currentUser.email.split('@')[0];
+            const bubble = document.createElement("div");
+            bubble.className = `w-fit max-w-[80%] ${isMe ? 'ml-auto bg-cyan-500' : 'bg-white text-black'} px-4 py-2 rounded-xl`;
+            bubble.textContent = msg.text;
+            box.appendChild(bubble);
+          });
+          setTimeout(() => box.scrollTop = box.scrollHeight, 100);
+        });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if (!text || !selectedChatUser) return;
+
+      const docId = getChatDocId(currentUser.email.split('@')[0], selectedChatUser);
+      db.collection("chats").doc(docId).collection("messages").add({
+        sender: currentUser.email.split('@')[0],
+        text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      input.value = "";
+    }
+
+    async function deleteChat(usernameToDelete) {
+  const myUsername = currentUser.email.split('@')[0];
+  const chatId = getChatDocId(myUsername, usernameToDelete);
+
+  try {
+    // Step 1: Delete all messages
+    const messagesRef = db.collection("chats").doc(chatId).collection("messages");
+    const messagesSnapshot = await messagesRef.get();
+    const batch = db.batch();
+    messagesSnapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+
+    // Step 2: Remove chat reference from both users
+    const usersRef = db.collection("users");
+    const usersSnapshot = await usersRef.get();
+    usersSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.username === myUsername || data.username === usernameToDelete) {
+        usersRef.doc(doc.id).update({
+          chattingWith: firebase.firestore.FieldValue.arrayRemove(
+            data.username === myUsername ? usernameToDelete : myUsername
+          )
+        });
+      }
+    });
+
+    // Step 3: Clear right-side UI
+    document.getElementById("chatBox").innerHTML = "";
+    document.getElementById("selectedUser").innerHTML = "";
+    document.getElementById("messageInput").value = "";
+
+    // Step 4: Remove from left chat list
+    const chatUserElement = document.querySelector(
+      `.chat-user[data-username="${usernameToDelete}"]`
+    );
+    if (chatUserElement) chatUserElement.remove();
+
+    // Optional: Show toast
+    toastr.success(`Chat with ${usernameToDelete} deleted`);
+
+  } catch (err) {
+    console.error("Error deleting chat:", err);
+    toastr.error("Failed to delete chat");
+  }
+}
+
+  </script>
+</body>
+</html>

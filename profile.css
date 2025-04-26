@@ -1,0 +1,827 @@
+/* General Styles */
+
+
+body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+/* ------------------------------------------------------------------------------------------------------------------*/
+
+/* Navbar Styles */
+nav {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 10px 20px;
+    border-radius: 16px;
+    margin: 20px auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  nav .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  
+  nav .search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+  }
+  
+  nav .search-bar input {
+    flex: 1;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.1);
+  }
+  
+  nav .search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  nav .search-bar i {
+    margin-left: 10px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  nav .create {
+    display: flex;
+    align-items: center;
+  }
+  
+  nav .create .btn-primary {
+    padding: 10px 20px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 20px;
+    font-size: 18px;
+    border: none;
+    backdrop-filter: blur(6px);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  
+  nav .create .btn-primary:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: #000;
+  }
+  
+  nav .profile-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  nav .profile-photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  #profileOptions {
+  display: none;
+  position: absolute;
+  top: 100px;
+  right: 10px;
+  width: 280px; /* Increased width */
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  padding: 12px;
+}
+
+/* Profile block */
+#profileOptions .profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 12px; /* Gap between profile and the rest */
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#profileOptions .profile-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#profileOptions .profile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#profileOptions .handle h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+}
+
+#profileOptions .handle .text-muted {
+  margin: 0;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Menu links */
+#profileOptions a {
+  display: block;
+  padding: 10px 14px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: background 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px;
+}
+
+#profileOptions a:last-child {
+  margin-bottom: 0;
+}
+
+#profileOptions a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+/* === Profile Header === */
+.profile-header {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    margin: 40px auto;
+    max-width: 900px;
+    color: #fff;
+}
+
+/* === Banner === */
+.profile-banner {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* === Profile Info Section === */
+.profile-info {
+    margin-top: -75px;
+    text-align: center;
+    padding-top: 20px;
+}
+
+.profile-photo-large {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    position: relative;
+}
+
+.profile-photo-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Spinner Loader */
+.loading-spinner {
+    display: none;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* === Text Info === */
+.profile-info h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 12px 0 4px;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.profile-handle {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: lowercase;
+}
+
+.profile-bio {
+    font-size: 15px;
+    font-family: 'Roboto Slab', serif;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 10px auto 0;
+    font-style: italic;
+}
+
+/* === Edit Button === */
+.edit-btn-wrapper {
+    margin-top: 15px;
+}
+
+.edit-btn-wrapper .btn-secondary {
+    padding: 10px 26px;
+    font-size: 14px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    border: none;
+    color: #fff;
+    backdrop-filter: blur(6px);
+    transition: 0.3s ease all;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.edit-btn-wrapper .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: #000;
+}
+
+/* === Centered Stats Container === */
+.profile-stats {
+    width: 100%;
+    max-width: 380px;
+    margin: 25px auto 0;
+    padding: 10px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between; /* Spread to left & right */
+    align-items: center;
+}
+
+/* === Individual Stat Box === */
+.profile-stats .stat {
+    text-align: center;
+    min-width: 80px;
+}
+
+/* === Number (Bold) === */
+.profile-stats .stat strong {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    display: block;
+    line-height: 1.2;
+}
+
+/* === Label (Text) === */
+.profile-stats .stat span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 2px;
+    display: block;
+    line-height: 1.1;
+}
+
+/* === Follow Button === */
+#followButton {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    transition: background 0.3s ease, color 0.3s ease;
+    margin-top: 10px;
+}
+
+#followButton:hover {
+    background: rgba(255, 255, 255, 0.4);
+    color: #000;
+}
+
+/* === Responsive Design === */
+@media (max-width: 600px) {
+    .profile-header {
+        margin: 20px;
+        padding: 15px;
+    }
+
+    .profile-banner {
+        height: 200px;
+    }
+
+    .profile-photo-large {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-info h2 {
+        font-size: 22px;
+    }
+
+    .profile-bio {
+        font-size: 14px;
+        padding: 0 10px;
+    }
+
+    .profile-stats {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .edit-btn-wrapper .btn-secondary {
+        width: 100%;
+    }
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+
+/* Bio */
+/* === Profile Content Area === */
+.profile-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* === Navigation (optional future use) === */
+.profile-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.profile-nav a {
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    transition: background 0.3s ease;
+}
+
+.profile-nav a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* === Profile Section Glassmorphic === */
+.profile-section {
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* === Section Title === */
+.profile-section h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* === Section Paragraph Text === */
+.profile-section p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/* ===== Feed/Post Card ===== */
+.feed {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    transition: all 0.3s ease;
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  /* Smooth Entry */
+  .feed.fade-in {
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ===== Head Section ===== */
+  .feed .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .feed .user {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .profile-photo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  }
+  
+  .profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Username */
+  .feed .info a {
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .feed .info a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Ellipsis and Delete */
+  .feed .edit {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .feed .edit i {
+    font-size: 20px;
+    color: #ddd;
+  }
+  
+  .feed .delete-button {
+    position: absolute;
+    top: 40px;
+    right: 5px;
+    color: #f33;
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    display: none;
+    z-index: 10;
+  }
+  
+
+  .feeds .feed:last-child {
+    margin-bottom: 0;
+  }  
+  
+  /* ===== Caption Area ===== */
+  .caption-container {
+    margin-bottom: 0.6rem;
+  }
+  
+  .caption p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #e2e2e2;
+  }
+  
+  .hashtag {
+    color: #4dd0e1;
+    font-weight: 600;
+  }
+  
+  /* ===== Action Buttons ===== */
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  
+  .interaction-buttons {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+  }
+  
+  .interaction-buttons span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+  }
+  
+  .interaction-buttons span:hover {
+    transform: scale(1.1);
+    color: #4dd0e1;
+  }
+  
+  .like-button.liked i {
+    color: #4dd0e1;
+  }
+  
+  .like-count {
+    font-size: 14px;
+  }
+  
+  
+  /* Timestamp */
+  .feed small {
+    display: block;
+    text-align: right;
+    color: #bbb;
+    font-size: 12px;
+    margin-top: 0.5rem;
+  }
+
+  .like-button.clicked i {
+    animation: pop 0.3s ease;
+  }
+  
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.5);
+      color: #4dd0e1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+
+/* ===== Comments Popup ===== */
+.comments-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.comments-popup-content {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    padding: 2rem;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comments-popup {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.comments-popup:not(.hidden) {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+.comments-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+.comments-header {
+    margin-bottom: 1rem;
+    color: #fff;
+    text-align: center;
+}
+
+.comments-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.comments-input-section {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.comments-input-box {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.comments-send-btn {
+    background-color: #4dd0e1;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.comment-item {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .comment-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+  }  
+
+/* === Responsive Media Queries === */
+@media (max-width: 768px) {
+    .profile-info h2 {
+        font-size: 20px;
+    }
+
+    .profile-info .btn-secondary {
+        padding: 6px 15px;
+    }
+
+    .feed .user .profile-photo {
+        width: 35px;
+        height: 35px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    nav .search-bar {
+        display: none;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .profile-info h2 {
+        font-size: 18px;
+    }
+
+    .profile-info .btn-secondary {
+        padding: 4px 10px;
+    }
+
+    .feed {
+        padding: 10px;
+    }
+
+    .feed .photo img {
+        border-radius: 5px;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .profile-photo {
+        width: 25px;
+        height: 25px;
+        margin-left: -15px;
+    }
+
+    .logo {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .handle {
+        font-size: 10px;
+    }
+
+    .profile-nav a,
+    .profile-options a {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+}

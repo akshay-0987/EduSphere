@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In</title>
+
+  <!-- Toastr CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <!-- NProgress CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 100vh;
+      transition: background 0.5s;
+    }
+
+    .dark-mode {
+      background: #121212;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      margin-right: 60px;
+    }
+
+    .form-wrapper {
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .form-container input {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border 0.3s, background 0.3s;
+}
+
+.form-container input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+.form-container input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: #82e5e7;
+}
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper button {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .password-wrapper button:hover {
+      color: #fff;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #4ca8af;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #3a9297;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .toggle-form p {
+      color: #ffffff;
+    }
+
+    .toggle-form a {
+      color: #82e5e7;
+      text-decoration: none;
+    }
+
+    .toggle-form a:hover {
+      text-decoration: underline;
+    }
+
+    #modeToggle {
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .branding {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  color: #ffffff;
+  z-index: 1;
+  animation: fadeSlideIn 1.2s ease forwards;
+  opacity: 0;
+}
+
+.brand-text {
+  font-size: 100px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(90deg, #00bcd4, #4dd0e1, #81d4fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glowPulse 2.5s infinite alternate;
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate(-100%, -50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0%, -50%);
+  }
+}
+
+@keyframes glowPulse {
+  from {
+    text-shadow: 0 0 10px #00bcd4, 0 0 20px #4dd0e1;
+  }
+  to {
+    text-shadow: 0 0 20px #81d4fa, 0 0 30px #00bcd4;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <button id="modeToggle">🌗 Toggle Mode</button>
+  <div class="branding">
+    <h1 class="brand-text">EduSphere</h1>
+  </div>
+  
+  <div class="container">
+    <div class="form-wrapper">
+      <form class="form-container" onsubmit="event.preventDefault(); login();">
+        <h2>Log In</h2>
+        <input type="text" id="signin-email" placeholder="Email" required />
+
+        <div class="password-wrapper">
+          <input type="password" id="signin-password" placeholder="Password" required />
+          <button type="button" id="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
+
+        <button type="submit">Log In</button>
+
+        <div class="toggle-form">
+          <p><a href="#" onclick="resetPassword()">Forgot Password?</a></p>
+          <p>Don't have an account? <a href="check.html">Sign up</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toastr + jQuery + NProgress -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { auth } from './firebase-config.js';
+    import {
+      signInWithEmailAndPassword,
+      signOut,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+    window.login = async function login() {
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const loginButton = document.querySelector('button[type="submit"]');
+
+      NProgress.start();
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+
+      try {
+        await signOut(auth);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+          toastr.warning("Please verify your email before logging in.");
+          await signOut(auth);
+          return;
+        }
+
+        toastr.success("Login successful!");
+        setTimeout(() => window.location.href = "home.html", 1000);
+      } catch (error) {
+        let message = "Login failed.";
+        if (error.code === 'auth/user-not-found') {
+          message = "No account found with this email.";
+        } else if (error.code === 'auth/wrong-password') {
+          message = "Incorrect password.";
+        } else if (error.code === 'auth/invalid-email') {
+          message = "Invalid email format.";
+        } else if (error.code === 'auth/too-many-requests') {
+          message = "Too many attempts. Try again later.";
+        }
+        toastr.error(message);
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Log In";
+        NProgress.done();
+      }
+    };
+
+    window.resetPassword = async function resetPassword() {
+      const email = document.getElementById('signin-email').value.trim();
+      if (!email) {
+        toastr.info("Enter your email to reset password.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        toastr.success("Password reset email sent!");
+      } catch (error) {
+        toastr.error("Failed: " + error.message);
+      }
+    };
+
+    window.togglePasswordVisibility = function togglePasswordVisibility() {
+      const passwordInput = document.getElementById("signin-password");
+      const toggleButton = document.getElementById("toggle-password");
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      toggleButton.textContent = isPassword ? "🙈" : "👁️";
+    };
+  </script>
+
+  <!-- Dark Mode Toggle -->
+  <script>
+    const toggleBtn = document.getElementById("modeToggle");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleBtn.textContent = document.body.classList.contains("dark-mode") ? "🌗 Toggle Mode" : "🌗 Toggle Mode";
+    });
+  </script>
+
+  <!-- Offline Detection -->
+  <script>
+    window.addEventListener('offline', () => toastr.warning("You are offline!"));
+    window.addEventListener('online', () => toastr.success("You are back online!"));
+  </script>
+</body>
+</html>

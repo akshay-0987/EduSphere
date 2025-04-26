@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check Student Details</title>
+  <!-- NProgress CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      overflow: hidden;
+      transition: background-color 0.4s ease;
+    }
+
+    body.dark-mode {
+      background: #121212;
+    }
+
+    .container {
+      position: absolute;
+      top: 50%;
+      right: 5%;
+      transform: translateY(-50%);
+      max-width: 450px;
+      width: 100%;
+      padding: 40px 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      animation: slideInLeft 0.7s ease forwards;
+      color: #ffffff;
+      opacity: 0;
+    }
+
+    @keyframes slideInLeft {
+      0% {
+        transform: translate(100%, -50%);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(0%, -50%);
+        opacity: 1;
+      }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    input[type="text"]:focus {
+      border-color: #ffffff;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #00bcd4;
+      color: #ffffff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #009fb3;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .error {
+      color: #ff4e4e;
+    }
+
+    .success {
+      color: #6aff6a;
+    }
+
+    .toast {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .mode-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #ffffff22;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .branding {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  color: #ffffff;
+  z-index: 1;
+  animation: fadeSlideIn 1.2s ease forwards;
+  opacity: 0;
+}
+
+.brand-text {
+  font-size: 100px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(90deg, #00bcd4, #4dd0e1, #81d4fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glowPulse 2.5s infinite alternate;
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translate(-100%, -50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0%, -50%);
+  }
+}
+
+@keyframes glowPulse {
+  from {
+    text-shadow: 0 0 10px #00bcd4, 0 0 20px #4dd0e1;
+  }
+  to {
+    text-shadow: 0 0 20px #81d4fa, 0 0 30px #00bcd4;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="mode-toggle" onclick="toggleMode()">🌗 Toggle Mode</div>
+
+  <div class="branding">
+    <h1 class="brand-text">EduSphere</h1>
+  </div>  
+
+  <div class="container">
+    <h1>Check Student Eligibility Criteria</h1>
+
+    <label for="phone">Enter Phone Number:</label>
+    <input type="text" id="phone" name="phone" placeholder="Enter 10-digit phone number" maxlength="10" />
+
+    <button onclick="fetchStudentDetails()">Get Details</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <div class="toast" id="toast">Redirecting to signup...</div>
+
+  <!-- NProgress JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
+  <script>
+    const phoneInput = document.getElementById('phone');
+    const messageDiv = document.getElementById('message');
+    const toast = document.getElementById('toast');
+
+    // Validation on input
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = phoneInput.value.replace(/[^\d]/g, '').slice(0, 10);
+    });
+
+    // Enter key triggers fetch
+    phoneInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        fetchStudentDetails();
+      }
+    });
+
+    // Mode Toggle
+    function toggleMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    // Show toast
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    async function fetchStudentDetails() {
+      const phone = phoneInput.value.trim();
+      messageDiv.textContent = '';
+      messageDiv.classList.remove('error', 'success');
+
+      if (!phone || phone.length !== 10) {
+        messageDiv.textContent = 'Please enter a valid 10-digit phone number.';
+        messageDiv.classList.add('error');
+        return;
+      }
+
+      if (!navigator.onLine) {
+        messageDiv.textContent = 'You are offline. Please check your connection.';
+        messageDiv.classList.add('error');
+        return;
+      }
+
+      NProgress.start();
+
+      const timeout = setTimeout(() => {
+        NProgress.done();
+        messageDiv.textContent = 'Request timed out. Please try again.';
+        messageDiv.classList.add('error');
+      }, 10000);
+
+      try {
+        const loginResponse = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobilenumber: phone }),
+        });
+
+        const loginResult = await loginResponse.json();
+
+        if (!loginResult.success) {
+          clearTimeout(timeout);
+          NProgress.done();
+          messageDiv.textContent = 'Student Details Not Available: ' + loginResult.error;
+          messageDiv.classList.add('error');
+          return;
+        }
+
+        const token = loginResult.token;
+
+        const dataResponse = await fetch('http://localhost:5000/data32', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ method: 32 }),
+        });
+
+        const dataResult = await dataResponse.json();
+        clearTimeout(timeout);
+        NProgress.done();
+
+        if (!dataResult.success) {
+          messageDiv.textContent = 'Error fetching data: ' + dataResult.error;
+          messageDiv.classList.add('error');
+          return;
+        }
+
+        const student = dataResult.data;
+
+        if (student.phone !== phone) {
+          messageDiv.textContent = 'No student found with the provided phone number.';
+          messageDiv.classList.add('error');
+        } else {
+          messageDiv.textContent = 'Student found!';
+          messageDiv.classList.remove('error');
+          messageDiv.classList.add('success');
+
+          showToast('Redirecting to signup...');
+
+          setTimeout(() => {
+            const fullName = `${student.firstname}`;
+            const redirectUrl = `signup.html?fullname=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(student.phone)}&hallticketno=${encodeURIComponent(student.hallticketno)}`;
+            window.location.href = redirectUrl;
+          }, 1600);
+        }
+      } catch (error) {
+        clearTimeout(timeout);
+        NProgress.done();
+        console.error('Error:', error);
+        messageDiv.textContent = 'Error fetching student details.';
+        messageDiv.classList.add('error');
+      }
+    }
+  </script>
+  <script>
+    // Disable right-click
+    document.addEventListener('contextmenu', event => event.preventDefault());
+  
+    // Disable common dev tools keys
+    document.addEventListener('keydown', event => {
+      // F12
+      if (event.key === 'F12') {
+        event.preventDefault();
+      }
+      // Ctrl+Shift+I/J/C or Ctrl+U
+      if ((event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) || 
+          (event.ctrlKey && event.key.toUpperCase() === 'U')) {
+        event.preventDefault();
+      }
+    });
+  </script>
+  
+</body>
+</html>

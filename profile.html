@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR BLOGl - User Profile</title>
+    <!-- IconScout CDN -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap">
+    <link rel="stylesheet" href="./profile.css">
+</head>
+<body>
+    <div class="parallax-bg">
+        <div class="layer layer-1"></div>
+        <div class="layer layer-2"></div>
+        <div class="layer layer-3"></div>
+    </div>
+
+    <nav>
+        <div class="container">
+            <h2 class="logo">𝘼𝙍 𝘽𝙡𝙤𝙜𝙜𝙞𝙣𝙜</h2>
+            
+            <div class="create">
+                
+                    <a href="home.html" class="btn btn-primary">Home</a>
+              
+                <a href="create.html" class="btn btn-primary">Create</a>
+                <div class="profile-photo">
+                    <img src="" alt="AR" id="profileImage">
+                </div>
+                <div id="profileOptions" class="profile-options">
+                    <a href="profile.html" id="myProfileOption">My Profile</a>
+                    <a href="login.html" id="loginOption">Login</a>
+                    <a href="signup.html" id="signupOption">Sign Up</a>
+                    <a href="login.html" id="logoutOption" style="display: none;">Logout</a>
+                </div>                                            
+            </div>            
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="profile-header">
+            <div class="profile-banner">
+                <img src="./images/social logo.png" alt="Profile Banner" id="profileBanner" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="loading-spinner" id="bannerLoadingSpinner"></div>
+            </div>                                    
+            <div class="profile-info">
+                <div class="profile-photo-large">
+                    <img src="" alt="Profile Photo" id="profilePhotoLarge">
+                    <div class="loading-spinner" id="profileLoadingSpinner"></div>
+                </div>
+            
+                <div class="profile-text">
+                    <h2 id="profile-name">User Name</h2>
+                    <p id="profile-handle" class="profile-handle">@User Hall-Ticket</p>
+                    <p id="profile-bio" class="profile-bio">User Bio</p>
+                </div>
+            
+                <div class="edit-btn-wrapper">
+                    <a href="editProfile.html" class="btn btn-secondary">Edit Profile</a>
+                </div>
+            
+                <div class="profile-stats">
+                    <div class="stat">
+                        <strong id="followersCount">0</strong>
+                        <span>Followers</span>
+                    </div>
+                    <div class="stat">
+                        <strong id="followingCount">0</strong>
+                        <span>Following</span>
+                    </div>
+                    <div class="stat">
+                        <button id="followButton" class="btn btn-primary">Follow</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-nav">
+                <a href="#posts">Posts</a>
+            </div>
+
+            <section id="about" class="profile-section">
+                <h3>About Me</h3>
+                <p id="profile-about">I love sharing my thoughts on art, technology, and lifestyle. Join me on this journey of creativity and exploration!</p>
+            </section>
+
+            <section id="posts" class="profile-section">
+                <h3>My Posts</h3>
+                <div class="feeds"></div>
+            </section>
+        </div>
+
+        <div id="commentsPopup" class="comments-popup hidden">
+          <div class="comments-popup-content">
+            <span class="comments-close-btn" id="closeCommentsBtn">&times;</span>
+            <h2 class="comments-header">Comments</h2>
+            <div class="comments-list" id="commentsContainer"></div>
+            <div class="comments-input-section">
+              <input type="text" id="commentInput" class="comments-input-box" placeholder="Add a comment..." />
+              <button id="sendCommentBtn" class="comments-send-btn">Send</button>
+            </div>
+          </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import {
+          collection, query, orderBy, onSnapshot, doc, getDoc, updateDoc,
+          runTransaction, getDocs, addDoc, serverTimestamp, where, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+        
+        let currentUserId = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          // Auth state listener
+          onAuthStateChanged(auth, async (user) => {
+            currentUserId = user?.uid || null;
+            updateProfileOptions();
+        
+            if (!user) return;
+        
+            let profileUserId = user.uid;
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewedUserUid = urlParams.get('uid');
+            if (viewedUserUid && viewedUserUid !== user.uid) {
+              profileUserId = viewedUserUid;
+              document.querySelector('a[href="editProfile.html"]')?.style.setProperty("display", "none");
+              document.getElementById('followButton')?.style.setProperty("display", "block");
+            } else {
+              document.getElementById('followButton')?.style.setProperty("display", "none");
+            }
+        
+            try {
+              const userDocRef = doc(db, "users", profileUserId);
+              const userDoc = await getDoc(userDocRef);
+        
+              if (!userDoc.exists()) return console.error("User document not found!");
+              const userData = userDoc.data();
+              const profilePicUrl = userData.profilePicUrl || './images/social logo.png';
+        
+              // Sidebar profile picture
+              const profilePicSidebar = document.getElementById('profileImage');
+              if (profilePicSidebar) profilePicSidebar.src = profilePicUrl;
+        
+              // Large profile section
+              document.getElementById('profilePhotoLarge')?.setAttribute("src", profilePicUrl);
+              document.getElementById('profile-name').textContent = userData.fullname || "";
+              document.getElementById('profile-handle').textContent = `@${userData.username || "user"}`;
+              document.getElementById('profile-bio').innerHTML = `<strong>${userData.fullname}</strong><br>${userData.bio || ""}`;
+              document.getElementById('profile-about').textContent = userData.about || "";
+              document.getElementById('followersCount').textContent = userData.followers?.length || 0;
+              document.getElementById('followingCount').textContent = userData.following?.length || 0;
+        
+              updateBanner(userData.bannerPicUrl);
+              updateProfileImage(userData.profilePicUrl);
+              loadPosts(profileUserId);
+        
+            } catch (error) {
+              console.error("Error fetching profile data:", error);
+            }
+          });
+        
+          // Profile options toggle
+          const profileImage = document.getElementById('profileImage');
+          const profileOptions = document.getElementById('profileOptions');
+          profileImage?.addEventListener('click', () => {
+            profileOptions.style.display = (profileOptions.style.display === 'block') ? 'none' : 'block';
+          });
+        
+          document.addEventListener('click', (event) => {
+            if (event.target !== profileImage && !profileOptions.contains(event.target)) {
+              profileOptions.style.display = 'none';
+            }
+          });
+        
+          // Logout
+          const logoutOption = document.getElementById('logoutOption');
+          logoutOption?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+              await auth.signOut();
+              window.location.href = 'signup.html';
+            } catch (error) {
+              console.error('Logout failed:', error);
+            }
+          });
+        
+          
+        });
+        
+        // Profile Options Display Logic
+        function updateProfileOptions() {
+          const user = auth.currentUser;
+          const myProfileOption = document.getElementById('myProfileOption');
+          const loginOption = document.getElementById('loginOption');
+          const signupOption = document.getElementById('signupOption');
+          const logoutOption = document.getElementById('logoutOption');
+          const profileUserId = new URLSearchParams(window.location.search).get('uid');
+        
+          if (user) {
+            myProfileOption.style.display = (profileUserId && profileUserId !== user.uid) ? 'block' : 'none';
+            loginOption.style.display = 'none';
+            signupOption.style.display = 'none';
+            logoutOption.style.display = 'block';
+          } else {
+            myProfileOption.style.display = 'none';
+            loginOption.style.display = 'block';
+            signupOption.style.display = 'block';
+            logoutOption.style.display = 'none';
+          }
+        }
+        
+        // Load Posts
+        function loadPosts(userId) {
+          const userPostsRef = collection(db, 'users', userId, 'posts');
+          const q = query(userPostsRef, orderBy('timestamp', 'desc'));
+        
+          onSnapshot(q, async (snapshot) => {
+            const feedsContainer = document.querySelector('.feeds');
+            if (!feedsContainer) return;
+            feedsContainer.innerHTML = '';
+        
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            const profilePicUrl = userDoc.data().profilePicUrl;
+            const username = userDoc.data().username;
+        
+            snapshot.forEach(postDoc => {
+              renderPost(postDoc, profilePicUrl, username);
+            });
+          });
+        }
+        
+        function renderPost(doc, profilePicUrl) {
+    const feedsContainer = document.querySelector('.feeds');
+    if (!feedsContainer || !doc.exists()) return;
+
+    const data = doc.data();
+    const caption = data.caption || 'No caption provided';
+    const hashtags = data.hashtags || 'yourHashtag';
+    const likes = data.likes || 0;
+    const timestamp = data.timestamp?.seconds ? new Date(data.timestamp.seconds * 1000) : new Date();
+    const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const postHTML = `
+        <div class="feed fade-in" data-id="${doc.id}" data-owner-id="${data.ownerId}">
+            <div class="head">
+                <div class="user">
+                    <div class="profile-photo">
+                        <img src="${profilePicUrl}" alt="${data.username || 'User'}'s profile picture">
+                    </div>
+                    <div class="info">
+                        <a href="/social-media-website-main/social-media-website-main/profile.html?uid=${data.ownerId}">
+                            ${data.username || "User"}
+                        </a>
+                    </div>
+                </div>
+                <span class="edit">
+                    <i class="uil uil-ellipsis-h"></i>
+                    <button class="delete-button" style="display: none;">Delete</button>
+                </span>
+            </div>
+
+            <div class="caption-container">
+                <div class="caption">
+                    <p>${caption}</p>
+                </div>
+            </div>
+
+            <div class="caption">
+                <p><b><span class="hashtag">${hashtags}</span></b></p>
+            </div>
+
+            <div class="action-buttons">
+                <div class="interaction-buttons">
+                    <span class="like-button" data-id="${doc.id}" data-owner-id="${data.ownerId}">
+                        <i class="uil uil-heart"></i>
+                        <span class="like-count">${likes}</span>
+                    </span>
+                    <span class="comment-icon">
+                        <i class="uil uil-comment-dots"></i>
+                    </span>
+                </div>
+            </div>
+
+            <small>${formattedTime}</small>
+        </div>
+    `;
+
+    feedsContainer.insertAdjacentHTML('afterbegin', postHTML);
+
+    const postElement = feedsContainer.querySelector(`.feed[data-id="${doc.id}"]`);
+
+    // Delete toggle
+    const editIcon = postElement.querySelector('.edit i');
+    const deleteButton = postElement.querySelector('.delete-button');
+    editIcon.addEventListener('click', () => {
+        deleteButton.style.display = deleteButton.style.display === 'none' ? 'block' : 'none';
+    });
+
+    deleteButton.addEventListener('click', () => deletePost(doc.id, data.ownerId));
+
+    // Comment toggle
+    const commentIcon = postElement.querySelector('.comment-icon');
+    commentIcon.addEventListener('click', () => {
+        toggleCommentsPopup(doc.id, data.ownerId);
+    });
+
+    // Like handler
+    const likeButton = postElement.querySelector('.like-button');
+    likeButton.addEventListener('click', async () => {
+        await handleLike(doc.id, data.ownerId);
+    });
+}
+
+// ------------------------------------------------ Posts End ------------------------------------------------------ //
+
+// ------------------------------- Delete Post ------------------------------- //
+async function deletePost(postId, ownerId) {
+    try {
+        const postRef = doc(db, 'users', ownerId, 'posts', postId);
+        await deleteDoc(postRef);
+        console.log('Post deleted successfully');
+        document.querySelector(`.feed[data-id="${postId}"]`)?.remove();
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Failed to delete post. Please try again.');
+    }
+}
+
+
+// ------------------------------- Like Handling ------------------------------- //
+async function handleLike(postId, ownerId) {
+    const userId = auth.currentUser?.uid;
+    const likeButton = document.querySelector(`[data-id="${postId}"] .like-button`);
+    const likeCountElement = likeButton?.querySelector('.like-count');
+    
+    if (!userId || !likeButton || !likeCountElement) return;
+
+    try {
+        const postRef = doc(db, 'users', ownerId, 'posts', postId);
+        const postDoc = await getDoc(postRef);
+
+        if (!postDoc.exists()) return;
+
+        const postData = postDoc.data();
+        const currentLikes = postData.likes || 0;
+        const likedUsers = postData.likedUsers || {};
+        const isLiked = likedUsers[userId] !== undefined;
+
+        likeCountElement.textContent = isLiked ? currentLikes - 1 : currentLikes + 1;
+        likeButton.classList.toggle('liked', !isLiked);
+
+        likeButton.classList.add('clicked');
+        setTimeout(() => likeButton.classList.remove('clicked'), 300);
+
+
+        await updateDoc(postRef, {
+            likes: isLiked ? currentLikes - 1 : currentLikes + 1,
+            [`likedUsers.${userId}`]: isLiked ? deleteField() : new Date()
+        });
+
+        console.log(`${isLiked ? 'Unliked' : 'Liked'} post: ${postId}`);
+    } catch (error) {
+        console.error('Error updating like:', error);
+    }
+}
+
+async function checkUserLikeStatus(postId, ownerId) {
+    const userId = auth.currentUser?.uid;
+    const likeButton = document.querySelector(`[data-id="${postId}"] .like-button`);
+    const likeCountElement = likeButton?.querySelector('.like-count');
+
+    if (!userId || !likeButton || !likeCountElement) return;
+
+    try {
+        const postRef = doc(db, 'users', ownerId, 'posts', postId);
+        const postDoc = await getDoc(postRef);
+
+        if (!postDoc.exists()) return;
+
+        const postData = postDoc.data();
+        likeCountElement.textContent = postData.likes || 0;
+        const isLiked = postData.likedUsers?.[userId] !== undefined;
+        likeButton.classList.toggle('liked', isLiked);
+    } catch (error) {
+        console.error('Error checking like status:', error);
+    }
+}
+
+// Initialize like status for all buttons
+window.addEventListener('load', () => {
+    document.querySelectorAll('.like-button').forEach(button => {
+        const postId = button.dataset.id;
+        const ownerId = button.dataset.ownerId;
+        checkUserLikeStatus(postId, ownerId);
+
+        button.addEventListener('click', () => handleLike(postId, ownerId));
+    });
+});
+
+
+// ------------------------------- Comments ------------------------------- //
+async function loadComments(postId, ownerId) {
+    const container = document.getElementById('commentsContainer');
+    if (!container) return;
+
+    container.innerHTML = ''; // Clear previous comments
+
+    try {
+        const commentsRef = collection(db, 'users', ownerId, 'posts', postId, 'comments');
+        const snapshot = await getDocs(query(commentsRef, orderBy('timestamp', 'asc')));
+
+        for (const docSnap of snapshot.docs) {
+            const { username = "User", comment } = docSnap.data();
+            let profilePicUrl = 'default.png';
+
+            try {
+                const userQuery = query(collection(db, 'users'), where('username', '==', username));
+                const userSnap = await getDocs(userQuery);
+                if (!userSnap.empty) {
+                    profilePicUrl = userSnap.docs[0].data().profilePicUrl || 'default.png';
+                }
+            } catch (err) {
+                console.warn("Profile picture fetch failed:", err);
+            }
+
+            const commentItem = document.createElement('div');
+            commentItem.className = 'comment-item';
+            commentItem.style.marginBottom = '16px';
+            commentItem.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="${profilePicUrl}" alt="${username}" 
+                        style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #ccc;">
+                    <div style="flex: 1;">
+                        <p style="margin: 0;"><b>${username}:</b> ${comment}</p>
+                    </div>
+                    <button class="delete-comment-btn" 
+                        data-comment-id="${docSnap.id}" 
+                        data-post-id="${postId}" 
+                        data-owner-id="${ownerId}" 
+                        style="background: none; border: none; color: #e57373; cursor: pointer;">
+                        Delete
+                    </button>
+                </div>
+            `;
+            container.appendChild(commentItem);
+        }
+    } catch (error) {
+        console.error('Failed to load comments:', error);
+    }
+}
+
+async function deleteComment(postId, ownerId, commentId) {
+    try {
+        await deleteDoc(doc(db, 'users', ownerId, 'posts', postId, 'comments', commentId));
+        await loadComments(postId, ownerId); // Reload after deletion
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+    }
+}
+
+async function handleComment(postId, ownerId, commentText) {
+    if (!commentText.trim()) return;
+
+    try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const username = userDoc.exists() ? userDoc.data().username || "User" : "User";
+
+        await addDoc(collection(db, 'users', ownerId, 'posts', postId, 'comments'), {
+            username,
+            comment: commentText,
+            timestamp: serverTimestamp()
+        });
+
+        document.getElementById('commentInput').value = "";
+        await loadComments(postId, ownerId);
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+    }
+}
+
+function toggleCommentsPopup(postId, ownerId) {
+    const popup = document.getElementById('commentsPopup');
+    const input = document.getElementById('commentInput');
+    const sendBtn = document.getElementById('sendCommentBtn');
+
+    if (!popup || !input || !sendBtn) return;
+
+    popup.classList.remove('hidden');
+    input.value = "";
+    sendBtn.dataset.postId = postId;
+    sendBtn.dataset.ownerId = ownerId;
+
+    loadComments(postId, ownerId);
+}
+
+// ------------------------------- Event Listeners ------------------------------- //
+
+// Comment open buttons
+document.querySelectorAll('.comment-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const postId = button.dataset.postId;
+        const ownerId = button.dataset.ownerId;
+        toggleCommentsPopup(postId, ownerId);
+    });
+});
+
+// Close popup
+document.getElementById('closeCommentsBtn')?.addEventListener('click', () => {
+    document.getElementById('commentsPopup')?.classList.add('hidden');
+});
+
+// Submit comment
+document.getElementById('sendCommentBtn')?.addEventListener('click', () => {
+    const btn = document.getElementById('sendCommentBtn');
+    const postId = btn.dataset.postId;
+    const ownerId = btn.dataset.ownerId;
+    const comment = document.getElementById('commentInput')?.value || "";
+    if (postId && ownerId) {
+        handleComment(postId, ownerId, comment);
+    }
+});
+
+// Delete comment (event delegation)
+document.getElementById('commentsContainer')?.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.classList.contains('delete-comment-btn')) {
+        const { commentId, postId, ownerId } = target.dataset;
+        deleteComment(postId, ownerId, commentId);
+    }
+});
+
+
+// ------------------------------------------------ Posts Commenting End ------------------------------------------------------ //
+// Profile & Banner Loaders
+        function updateProfileImage(url) {
+          const img = document.getElementById('profilePhotoLarge');
+          const spinner = document.getElementById('profileLoadingSpinner');
+          if (!img || !spinner) return;
+          spinner.style.display = 'block';
+          img.onload = () => {
+            spinner.style.display = 'none';
+            img.style.display = 'block';
+          };
+          img.onerror = () => spinner.style.display = 'none';
+          img.src = url;
+        }
+        
+        function updateBanner(url) {
+          const banner = document.getElementById('profileBanner');
+          const spinner = document.getElementById('bannerLoadingSpinner');
+          if (!banner || !spinner) return;
+          spinner.style.display = 'block';
+          banner.onload = () => {
+            spinner.style.display = 'none';
+            banner.style.display = 'block';
+          };
+          banner.onerror = () => spinner.style.display = 'none';
+          banner.src = url;
+        }
+
+        </script>
+        
+    
+</body>
+</html>

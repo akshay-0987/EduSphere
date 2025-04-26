@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings | ARBlog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp');
+      background-size: cover;
+      backdrop-filter: blur(10px);
+      color: #fff;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    button, select {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    button:hover, select:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .danger {
+      background: rgba(255, 87, 87, 0.3);
+    }
+
+    .danger:hover {
+      background: rgba(255, 87, 87, 0.5);
+    }
+
+    .logout-btn {
+      background: rgba(100, 181, 246, 0.3);
+    }
+
+    .logout-btn:hover {
+      background: rgba(100, 181, 246, 0.5);
+    }
+
+    .setting-group {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Settings</h1>
+
+  <h2>🔐 Account</h2>
+  <button onclick="window.location.href='editProfile.html'">Edit Profile</button>
+  <button onclick="resetPassword()">Change Password</button>
+  <button class="danger" onclick="deleteAccount()">Delete Account</button>
+
+  <h2>⚙️ App Settings</h2>
+
+<!-- Language Display (Non-editable) -->
+<div class="setting-group">
+  <span>🌐 Language</span>
+  <span style="opacity: 0.8;">Default English</span>
+</div>
+
+  <h2>📄 About / Support</h2>
+  <button onclick="alert('Help / FAQs coming soon!')">Help / FAQs</button>
+  <button onclick="alert('Email support@arblog.com for feedback')">Contact Support / Feedback</button>
+  <button onclick="alert('T&C and Privacy Policy coming soon!')">Terms & Conditions / Privacy Policy</button>
+
+  <h2>🚪 Logout</h2>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- Firebase and App Logic -->
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { doc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  import { deleteUser, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  window.resetPassword = async function () {
+    if (!auth.currentUser) return;
+    try {
+      await sendPasswordResetEmail(auth, auth.currentUser.email);
+      toastr.success('Password reset link sent to your email');
+    } catch (e) {
+      toastr.error('Error sending reset email');
+    }
+  }
+
+  window.deleteAccount = async function () {
+    if (!confirm("Are you sure you want to permanently delete your account?")) return;
+    try {
+      const uid = auth.currentUser.uid;
+      await deleteDoc(doc(db, 'users', uid));
+      await deleteUser(auth.currentUser);
+      toastr.success('Account deleted');
+      window.location.href = 'login.html';
+    } catch (err) {
+      toastr.error("Error deleting account");
+    }
+  }
+
+  window.resetAll = async function () {
+    if (!confirm("This will delete all your posts and data (not your auth account). Continue?")) return;
+    try {
+      const uid = auth.currentUser.uid;
+      const postsRef = collection(db, 'users', uid, 'posts');
+      const posts = await getDocs(postsRef);
+      posts.forEach(async (docSnap) => {
+        await deleteDoc(docSnap.ref);
+      });
+      await deleteDoc(doc(db, 'users', uid));
+      toastr.success('All data reset successfully');
+    } catch (err) {
+      toastr.error("Error resetting data");
+    }
+  }
+
+  window.logout = async function () {
+    try {
+      await signOut(auth);
+      toastr.success("Logged out");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 800);
+    } catch (e) {
+      toastr.error("Error during logout");
+    }
+  }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+<!-- ✅ Add jQuery before toastr -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
+<script>
+    toastr.options = {
+      "progressBar": true,
+      "positionClass": "toast-top-right",
+      "timeOut": "3000"
+    };
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!-- querybox.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Query Box</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: #374151;
+      opacity: 1;
+    }
+
+    textarea,
+    input[type="url"],
+    input[type="text"] {
+      background-color: rgba(255, 255, 255, 0.8);
+      color: black;
+      font-size: 16px;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+    }
+
+    button {
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .answer-btn {
+      transition: all 0.3s ease;
+    }
+
+    .answer-btn:hover {
+      background-color: #059669 !important;
+      transform: scale(1.05);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .active-tab {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen flex flex-col items-center justify-center px-4 py-10">
+
+  <div class="glass w-full max-w-3xl">
+    <!-- Tabs -->
+    <div class="flex justify-center gap-4 mb-6">
+      <button id="askTab" class="tab-btn px-4 py-2 rounded-lg active-tab">Ask a Query</button>
+      <button id="answerTab" class="tab-btn px-4 py-2 rounded-lg">Answer a Query</button>
+      <button id="viewTab" class="tab-btn px-4 py-2 rounded-lg">View Queries</button>
+    </div>
+
+    <!-- Ask a Query -->
+    <div id="askSection" class="space-y-6">
+      <div>
+        <label for="askQuestion" class="block text-lg mb-2 font-semibold text-white">Your Question</label>
+        <textarea
+          id="askQuestion"
+          rows="5"
+          class="w-full p-4 rounded-xl placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          placeholder="📝 Ask your question in detail with proper English so others can understand and help easily..."></textarea>
+      </div>
+
+      <div>
+        <label for="askLink" class="block text-lg mb-2 font-semibold text-white">Optional Reference Link</label>
+        <input
+          id="askLink"
+          type="url"
+          class="w-full p-4 rounded-xl placeholder-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          placeholder="🔗 GitHub, Docs, or video reference (optional)" />
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          id="submitQueryBtn"
+          class="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 px-6 py-3 rounded-xl text-white font-semibold shadow-lg">
+          Ask
+        </button>
+      </div>
+    </div>
+
+    <!-- Answer a Query -->
+    <div id="answerSection" class="hidden">
+      <div id="answerList" class="space-y-4 max-h-[400px] overflow-y-auto pr-2"></div>
+    </div>
+
+    <!-- View Queries (Only solved) -->
+    <div id="viewSection" class="hidden">
+      <div id="viewList" class="space-y-4 max-h-[400px] overflow-y-auto pr-2"></div>
+    </div>
+  </div>
+
+  <!-- Answer Popup -->
+  <div id="answerPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="glass w-full max-w-lg p-6">
+      <textarea
+        id="answerInput"
+        rows="4"
+        class="w-full p-4 rounded-lg placeholder-gray-700 text-black focus:outline-none focus:ring-2 focus:ring-cyan-400 mb-4"
+        placeholder="📝 Write your answer clearly and concisely..."></textarea>
+      <input
+        id="answerLink"
+        class="w-full p-4 rounded-lg placeholder-gray-700 text-black focus:outline-none focus:ring-2 focus:ring-cyan-400 mb-4"
+        placeholder="🔗 Optional reference link (Docs, GitHub, etc.)" />
+      <div class="flex justify-end gap-2">
+        <button id="submitAnswerBtn" class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg text-white font-semibold">Submit</button>
+        <button id="cancelPopupBtn" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white font-semibold">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./querybox.js"></script>
+</body>
+</html>

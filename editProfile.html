@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile</title>
+
+  <!-- CropperJS -->
+  <link href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet"/>
+  
+  <!-- Toastr and NProgress -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress/nprogress.css" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    #cropModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 20px;
+  border-radius: 12px;
+  display: none;
+  width: 80%;  /* Control the modal width */
+  max-width: 600px; /* Limit the maximum width */
+  max-height: 80vh; /* Limit the height of the modal */
+  overflow: hidden; /* Hide the content overflow */
+}
+
+#cropModal img {
+  width: 100%;  /* Ensure image fits the container */
+  max-height: 50vh;  /* Adjust image height */
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+#cropModal h2 {
+  text-align: center;
+  color: #00ffaa;
+  margin-bottom: 15px;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+      background: #121212;
+      color: #fff;
+    }
+
+    .container.dark-mode {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: url('https://asset.gecdesigns.com/img/background-templates/blue-abstract-business-background-template-1612006256659-cover.webp') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      padding: 40px;
+      max-width: 600px;
+      width: 90%;
+      color: #fff;
+      animation: slideIn 0.6s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    input[type="file"] {
+      color: #fff;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-top: 20px;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #0078ff;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #005fd6;
+    }
+
+    .btn-light {
+      background-color: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+    }
+
+    #usernameError {
+      font-size: 14px;
+      color: #ff8080;
+      margin-top: 5px;
+      display: none;
+    }
+
+    /* Button for Dark Mode Toggle */
+    .dark-mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #fff;
+      color: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    /* Button for Dark Mode Toggle when in Dark Mode */
+    .dark-mode .dark-mode-toggle {
+      background-color: #333;
+      color: #fff;
+    }
+    input[readonly] {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      cursor: not-allowed;
+    }
+
+    #phoneError {
+      font-size: 14px;
+      color: #ff8080;
+      margin-top: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <button class="dark-mode-toggle" id="darkModeToggle">🌙</button>
+  <div class="container">
+    <h1>Edit Your Profile</h1>
+    <form id="editProfileForm">
+      <label for="editFullname">Full Name:</label>
+      <input type="text" id="editFullname" required />
+
+      <label for="editUsername">Username:</label>
+      <input type="text" id="editUsername" readonly required />
+      <div id="usernameError">Username is already taken</div>
+
+      <label for="editPhone">Phone Number:</label>
+      <input type="text" id="editPhone" readonly required />
+      <div id="phoneError">Invalid phone number format</div>
+
+      <label for="editBio">Bio:</label>
+      <textarea id="editBio" placeholder="Short intro about yourself"></textarea>
+
+      <label for="editAbout">About:</label>
+      <textarea id="editAbout" placeholder="Tell us more about you..."></textarea>
+
+      <label for="editProfilePic">Profile Picture:</label>
+      <input type="file" id="editProfilePic" accept="image/*" />
+
+      <label for="editBannerPic">Banner Picture:</label>
+      <input type="file" id="editBannerPic" accept="image/*" />
+
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+
+  <!-- Crop Modal -->
+  <div id="cropModal">
+    <h2>Crop Your Image</h2>
+    <div><img id="cropImage" /></div>
+    <div class="modal-btns">
+      <button id="cropButton" class="btn btn-primary" type="button">Crop & Save</button>
+      <button id="cancelCropButton" class="btn btn-light" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import Cropper from 'https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.esm.js';
+    import { auth, db, storage } from './firebase-config.js';
+    import { doc, getDoc, updateDoc, query, collection, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+    
+    // Initialize NProgress
+    NProgress.configure({ showSpinner: false });
+    
+    // Initialize Toastr
+    toastr.options = {
+      positionClass: 'toast-top-right',
+      timeOut: 5000,
+      closeButton: true,
+    };
+
+    // Dark Mode Toggle
+    $('#darkModeToggle').click(() => {
+      $('body').toggleClass('dark-mode');
+      $('.container').toggleClass('dark-mode');
+    });
+
+    // Profile and Banner Image Cropper Logic
+    let cropper;
+    let currentFileInput;
+    let isProfilePic;
+
+    function resetCropper() {
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+      $('#cropModal').hide();
+      $('#cropImage').attr('src', '');
+    }
+
+    function showCropper(input, profile) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        $('#cropImage').attr('src', reader.result);
+        $('#cropModal').show();
+        cropper = new Cropper(document.getElementById('cropImage'), {
+          aspectRatio: profile ? 1 : 16 / 9,
+          viewMode: 1,
+        });
+      };
+      reader.readAsDataURL(file);
+      currentFileInput = input;
+      isProfilePic = profile;
+    }
+
+    $('#editProfilePic').change(() => {
+      resetCropper();
+      showCropper($('#editProfilePic')[0], true);
+    });
+
+    $('#editBannerPic').change(() => {
+      resetCropper();
+      showCropper($('#editBannerPic')[0], false);
+    });
+
+    $('#cropButton').click(async () => {
+      if (!cropper || !currentFileInput) return;
+
+      const canvas = cropper.getCroppedCanvas({
+        width: isProfilePic ? 300 : 1280,
+        height: isProfilePic ? 300 : 720,
+      });
+
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], currentFileInput.files[0].name, { type: 'image/jpeg' });
+        const path = isProfilePic ? 'profile_pics' : 'banner_pics';
+        const storageRef = ref(storage, `${path}/${auth.currentUser.uid}/${file.name}`);
+        
+        // Show loading bar while uploading
+        NProgress.start();
+        
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        currentFileInput.setAttribute('data-url', downloadURL);
+
+        // Hide loading bar and reset cropper
+        NProgress.done();
+        resetCropper();
+      }, 'image/jpeg');
+    });
+
+    $('#cancelCropButton').click(resetCropper);
+
+    // Username validation
+    $('#editUsername').on('input', async () => {
+      const username = $('#editUsername').val().trim();
+      if (!username) return $('#usernameError').hide();
+
+      const usersRef = collection(db, "users");
+      const usernameQuery = query(usersRef, where("username", "==", username));
+      const querySnapshot = await getDocs(usernameQuery);
+      $('#usernameError').toggle(querySnapshot.empty === false);
+    });
+
+    // Authentication and Form Handling
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+
+      const docRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(docRef);
+      if (!userDoc.exists()) return;
+
+      const data = userDoc.data();
+      $('#editFullname').val(data.fullname || '');
+      $('#editUsername').val(data.username || '');
+      $('#editPhone').val(data.phone || '');
+      $('#editBio').val(data.bio || '');
+      $('#editAbout').val(data.about || '');
+
+      $('#editProfilePic').attr('data-url', data.profilePicUrl || '');
+      $('#editBannerPic').attr('data-url', data.bannerPicUrl || '');
+
+      $('#editProfileForm').submit(async (e) => {
+        e.preventDefault();
+        
+        // Show loading bar while saving
+        NProgress.start();
+
+        const updated = {
+          fullname: $('#editFullname').val(),
+          username: $('#editUsername').val(),
+          phone: $('#editPhone').val(),
+          bio: $('#editBio').val(),
+          about: $('#editAbout').val(),
+          profilePicUrl: $('#editProfilePic').attr('data-url'),
+          bannerPicUrl: $('#editBannerPic').attr('data-url'),
+          isProfileComplete: true
+        };
+
+        try {
+          await updateDoc(docRef, updated);
+          
+          // Show success notification
+          toastr.success('Profile updated successfully!');
+
+          // Hide loading bar
+          NProgress.done();
+          
+          window.location.href = 'profile.html';
+        } catch (err) {
+          console.error(err);
+          
+          // Show error notification
+          toastr.error('Failed to update profile.');
+          
+          NProgress.done();
+        }
+      });
+    });
+  </script>
+
+  <!-- NProgress and Toastr JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nprogress/nprogress.js"></script>
+</body>
+</html>
