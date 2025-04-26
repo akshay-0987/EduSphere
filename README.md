@@ -2,6 +2,11 @@
 
 A fully responsive, secure, and user-friendly blogging platform developed in two phases. EduSphere empowers users to create, share, and interact with blog posts in an intuitive, professional environment. Built with scalability, security, and user experience as core priorities.
 
+## 🚀 Project Link
+
+Visit the live project: [EduSphere - Live](https://edu-sphere4.netlify.app/)
+
+
 ## 🚀 Phase 1: Core Features
 
 - 🔐 **User Authentication** – Secure registration and login system  
@@ -54,3 +59,6 @@ npm start
 | **B.Akshay Kumar**     | **Frontend Developer** |
 | **N.Anvith Rao**       | **Backend (Firebase)** |
 | **B.Rohith**           | **Frontend Developer** |
+
+
+Check here(https://edu-sphere4.netlify.app/)
